@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: 031-517-202
+Bundle-SymbolicName: 031-517-202
+Bundle-Version: 1.0.0.qualifier

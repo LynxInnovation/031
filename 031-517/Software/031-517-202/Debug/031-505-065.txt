@@ -1,0 +1,7 @@
+MCU select:
+  ATmega644p
+
+Fuse Set: 
+  Low = 0x62;
+  High = 0x99; 	
+  Extended = 0xff;

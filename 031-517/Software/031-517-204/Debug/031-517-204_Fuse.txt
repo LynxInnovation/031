@@ -1,0 +1,7 @@
+MCU select:
+  ATmega164p
+
+Fuse Set: 
+  Low = 0xff;
+  High = 0xd9; 	
+  Extended = 0xfd;

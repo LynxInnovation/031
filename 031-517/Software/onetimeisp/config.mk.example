@@ -1,0 +1,5 @@
+FIRMWARE_PATH=/path/to/target/firmware.hex
+
+isp: $(TARGET).hex
+	avrdude -c usbtiny -P usb -p $(MCU) -U flash:w:$(TARGET).hex
+

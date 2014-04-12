@@ -1,0 +1,6 @@
+MCU select:
+  ATmega48p
+Fuse Set: 
+  Low = 0xff;
+  High = 0xdc; 	
+  Extended = 0xff;
