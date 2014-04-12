@@ -1,0 +1,8 @@
+#Filter file
+*.o
+*.mk
+*.d
+*.elf
+*.lss
+*.map
+
