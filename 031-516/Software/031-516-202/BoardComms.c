@@ -152,10 +152,7 @@ void BCMessageSend(Uint8 *TxMsg, bool WaitForSend)
 
   // Send it
 
-  if(Bay==LeftBay)
-    SetBit (RS485DEPort, RS485DE);      // Turn on RS485 driver
-  else
-    SetBit (RS485DEPort, RS485DE2);      // Turn on RS485 driver
+  SetBit (RS485DEPort, RS485DE);      // Turn on RS485 driver
   DelayMS(1);
   BCTXBusy = true;
   TXBuf    = TxMsg;  // Set up the buffer and kick off the actual transmission

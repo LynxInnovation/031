@@ -56,10 +56,6 @@ static volatile bool gb_KeyCurrentTrackFlag;
 bool            LCDPresent;
 enum TRamp      Ramp;
 enum TProducts  Product;
-enum TBay       HeadphoneBay;
-enum TBay       Bay;
-Uint8           BayCount;
-Uint8           BayProduct[NoBay+1];
 enum TInput     Input;
 enum TI2SFormat InputFormat[LCDIn+1];
 volatile Uint8  FlashPhase;
@@ -78,7 +74,6 @@ Uint8           CmdRxBuf[1];
 Uint8           CommsIdleTime;
 Uint8           LastCommsSize;
 
-Uint8           UseSDChannel;
 // Forward declares
 
 void MainLoop(Uint8 PlayerStatus);
@@ -306,7 +301,6 @@ void SetInput(enum TInput NewInput)
  */
 void SetIdleState(void)
 {
-
   UART_TxStr("Setting to idle\r\n");
 
   // Work out default input for each bay
@@ -319,31 +313,8 @@ void SetIdleState(void)
     SetInput(MP3In);
 
   // Work out the idle volume for each bay
-/*  Volume = IdleVolume;
-  SetVolume(Volume);
-
-  TempBay = Bay;
-
-  // Work out the idle volume for each bay
-
-  UART_TxStr("Setting idle volumes\r\n");
-  for (Bay = LeftBay; Bay <= RightBay; Bay++) {
-    LastBayVolume[Bay] = Settings.ProdDef[BayProduct[Bay]].DefaultVolume;
-    UART_TxStr("Setting bay ");
-    UART_TxNum(Bay, 1);
-    UART_TxStr(" default volume ");
-    UART_TxNum(LastBayVolume[Bay], 3);
-    UART_TxNewLine();
-    Volume = Settings.ProdDef[BayProduct[Bay]].IdleVolume;
-    SetVolume(Volume);
-  }
-  Bay = TempBay;
-*/
   Volume = IdleVolume;
-  UART_TxStr("Idle volume is ");
-  UART_TxNum(Volume, 1);
-  UART_TxNewLine();
-
+  SetVolume(Volume);
   MP3_Pause(false);
 
   IdleTime = 0;
@@ -358,17 +329,12 @@ void SetIdleState(void)
  */
 void ShowProducts(void)
 {
-  Uint8 Pos;
   if (!LCDPresent)
     UART_TxStr("No ");
   UART_TxStr("LCD present");
-
-  UART_TxStr("\r\nOutputs are:");
-  for (Pos = LeftBay; Pos <= RightBay; Pos++) {
-    UART_TxChar(' ');
-    UART_TxNum(BayProduct[Pos], 1);
-  }
-  UART_TxNewLine();
+  UART_TxStr("\r\nOutput is ");
+  UART_TxNum(Product, 1);
+  UART_TxStr("\r\n");
 }
 
 
@@ -689,11 +655,7 @@ int main(void)
   Product       = UnknownProduct;
   Input         = MP3In;
   SlaveMode     = false;
-  BayCount      = 0;
   gb_KeyCurrentTrackFlag = false;
-  for(Bay = LeftBay; Bay <= NoBay; Bay++) {
-    BayProduct[Bay] = UnknownProduct;
-  }
   sei();      // Enable global interrupts
 
   // Print product build banner
@@ -712,7 +674,7 @@ int main(void)
 
 
   // Test the LEDs while bays boot up
-  Bay = RightBay;
+
   DelayMS(10);                     // Allow some time for keypad to boot up
   UART_TxStr("Testing LEDs\r\n");
   for (TempInt = 1; TempInt <= 2; TempInt++)
@@ -776,7 +738,6 @@ int main(void)
      TempInt++;
    }
 #endif
-
   MP3_Volume(250);
   UART_TxStr("MP3 init time = ");
   UART_TxNum(Timer_Read(), 1);
@@ -805,39 +766,9 @@ int main(void)
   InputFormat[LCDIn] = RxBuf[BCPParam2];
   BCMessageReceive(RxBuf);
 
-  /*
   // Look for output device
-  BayCount = 0;
-  Bay = LeftBay;
-  if (ExchangeBoardMsg(BCAOutput, BCTInquire, 0, 0, BCTInquireAnswer)) {
-      BayCount++;
-      UART_TxStr("Found bay ");
-      UART_TxNum(Bay, 1);
-      UART_TxStr(" = ");
-      BayProduct[Bay] = RxBuf[BCPParam1];
-      UART_TxNum(BayProduct[Bay], 1);
-      UART_TxNewLine();
-  }
-  BCMessageReceive(RxBuf);      // Finished with it so get ready for next msg
 
-  Bay = RightBay;
   if (ExchangeBoardMsg(BCAOutput, BCTInquire, 0, 0, BCTInquireAnswer)) {
-      BayCount++;
-      UART_TxStr("Found bay ");
-      UART_TxNum(Bay, 1);
-      UART_TxStr(" = ");
-      BayProduct[Bay] = RxBuf[BCPParam1];
-      UART_TxNum(BayProduct[Bay], 1);
-      UART_TxNewLine();
-  }
-  else{
-      UART_TxStr("No output device found");
-      ShowError(ErrorNoOutPut, true);
-  }
-  BCMessageReceive(RxBuf);      // Finished with it so get ready for next msg
-*/
-
- if (ExchangeBoardMsg(BCAOutput, BCTInquire, 0, 0, BCTInquireAnswer)) {
     Product = RxBuf[BCPParam1];
     UART_TxStr("Found output device ");
     UART_TxNum(Product, 1);
@@ -851,8 +782,6 @@ int main(void)
   }
   UART_TxStr("\r\n");
   BCMessageReceive(RxBuf);      // Finished with it so get ready for next msg
-
-
 
   // Allow E2 overwrite of detected defaults
 
@@ -927,6 +856,10 @@ void MainLoop(Uint8 PlayerStatus)
     MP3_Track(Track);
   }
 
+  /*if (!MP3Ready)       // If MP3 player has died
+    ShowError(ErrorNoMP3, true);              // Display error then reboot
+  */
+  // Process an incoming comms
 
   CheckForBoardMsg();
 
@@ -937,6 +870,12 @@ void MainLoop(Uint8 PlayerStatus)
   // Poll keys
 
   Key = GetKey();
+  /*
+  if (Key)
+    ClearBit(LogoLEDPort, LogoLED);
+  else
+    SetBit(LogoLEDPort, LogoLED);
+   */
 
   if (LastKey != Key) {     // Until we know the keyboard is good show it's output
     UART_TxStr("Key ");
