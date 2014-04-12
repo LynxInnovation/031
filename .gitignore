@@ -15,3 +15,11 @@
 031-516-202_another/
 rmp-mp3 (copy)/
 .hg/
+*.snap
+*.prefs
+*.index
+*.log
+*.sc
+*.pdom
+*.swp
+
