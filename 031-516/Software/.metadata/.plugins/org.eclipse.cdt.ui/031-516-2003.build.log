@@ -1,0 +1,20 @@
+11:12:26 **** Incremental Build of configuration Debug for project 031-516-2003 ****
+make all 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega48 031-516-2003.elf
+AVR Memory Usage
+----------------
+Device: atmega48
+
+Program:    1896 bytes (46.3% Full)
+(.text + .data + .bootloader)
+
+Data:         48 bytes (9.4% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+11:12:26 Build Finished (took 52ms)
+

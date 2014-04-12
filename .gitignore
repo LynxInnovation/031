@@ -4,4 +4,14 @@
 *.elf
 *.lss
 *.map
+*.i
+*.map.*
+*.lss.*
 
+#Filter folder
+.metadata/
+.settings/
+031-516-202 (3rd copy)/
+031-516-202_another/
+rmp-mp3 (copy)/
+.hg/

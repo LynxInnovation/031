@@ -1,0 +1,20 @@
+22:39:50 **** Incremental Build of configuration Debug for project 031-516-202 ****
+make all 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega644p 031-516-202.elf
+AVR Memory Usage
+----------------
+Device: atmega644p
+
+Program:   35954 bytes (54.9% Full)
+(.text + .data + .bootloader)
+
+Data:       2683 bytes (65.5% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+22:39:50 Build Finished (took 61ms)
+

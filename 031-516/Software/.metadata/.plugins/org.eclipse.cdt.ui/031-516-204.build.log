@@ -1,0 +1,38 @@
+20:51:47 **** Incremental Build of configuration Debug for project 031-516-204 ****
+make all 
+Building file: ../Timer.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -Os -fpack-struct -fshort-enums -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega164p -DF_CPU=20000000UL -MMD -MP -MF"Timer.d" -MT"Timer.d" -c -o "Timer.o" "../Timer.c"
+Finished building: ../Timer.c
+ 
+Building target: 031-516-204.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,031-516-204.map -mmcu=atmega164p -o "031-516-204.elf"  ./031-516-204.o ./BoardComms.o ./IIC.o ./Timer.o ./UART.o ./Volume.o ./Wm8960.o   
+Finished building target: 031-516-204.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S 031-516-204.elf  >"031-516-204.lss"
+Finished building: 031-516-204.lss
+ 
+Create Flash image (ihex format)
+avr-objcopy -R .eeprom -O ihex 031-516-204.elf  "031-516-204.hex"
+Finished building: 031-516-204.hex
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega164p 031-516-204.elf
+AVR Memory Usage
+----------------
+Device: atmega164p
+
+Program:    3902 bytes (23.8% Full)
+(.text + .data + .bootloader)
+
+Data:        130 bytes (12.7% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+20:51:47 Build Finished (took 102ms)
+

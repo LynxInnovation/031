@@ -1,0 +1,16 @@
+data/vs.h.i
+data/Makefile.i
+data/diet-test/Makefile.i
+data/main.c.i
+data/sd.c.i
+data/diet-test/test.sh.i
+data/diet-test/test.c.i
+data/hw.h.i
+data/diet-test/large.bin.i
+data/vs.c.i
+data/diet.h.i
+data/diet-test/small.bin.i
+data/diet-test/large.bin.d
+data/sd.h.i
+data/hw.c.i
+data/diet.c.i

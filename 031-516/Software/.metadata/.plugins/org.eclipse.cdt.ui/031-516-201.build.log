@@ -1,0 +1,38 @@
+12:57:16 **** Incremental Build of configuration Debug for project 031-516-201 ****
+make all 
+Building file: ../LampDirect.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -Os -fpack-struct -fshort-enums -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega48 -DF_CPU=20000000UL -MMD -MP -MF"LampDirect.d" -MT"LampDirect.d" -c -o "LampDirect.o" "../LampDirect.c"
+Finished building: ../LampDirect.c
+ 
+Building target: 031-516-201.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,031-516-201.map -mmcu=atmega48 -o "031-516-201.elf"  ./031-516-201.o ./BoardComms.o ./Keyboard.o ./LampDirect.o ./Timer.o   
+Finished building target: 031-516-201.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S 031-516-201.elf  >"031-516-201.lss"
+Finished building: 031-516-201.lss
+ 
+Create Flash image (ihex format)
+avr-objcopy -R .eeprom -O ihex 031-516-201.elf  "031-516-201.hex"
+Finished building: 031-516-201.hex
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega48 031-516-201.elf
+AVR Memory Usage
+----------------
+Device: atmega48
+
+Program:    1396 bytes (34.1% Full)
+(.text + .data + .bootloader)
+
+Data:         23 bytes (4.5% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+12:57:17 Build Finished (took 104ms)
+

@@ -1,0 +1,1190 @@
+
+031-517-201.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000588  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .bss          00000017  00800100  00800100  000005fc  2**0
+                  ALLOC
+  2 .stab         00001d70  00000000  00000000  000005fc  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  3 .stabstr      00001127  00000000  00000000  0000236c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .comment      00000011  00000000  00000000  00003493  2**0
+                  CONTENTS, READONLY
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	19 c0       	rjmp	.+50     	; 0x34 <__ctors_end>
+   2:	28 c0       	rjmp	.+80     	; 0x54 <__bad_interrupt>
+   4:	27 c0       	rjmp	.+78     	; 0x54 <__bad_interrupt>
+   6:	26 c0       	rjmp	.+76     	; 0x54 <__bad_interrupt>
+   8:	25 c0       	rjmp	.+74     	; 0x54 <__bad_interrupt>
+   a:	24 c0       	rjmp	.+72     	; 0x54 <__bad_interrupt>
+   c:	23 c0       	rjmp	.+70     	; 0x54 <__bad_interrupt>
+   e:	22 c0       	rjmp	.+68     	; 0x54 <__bad_interrupt>
+  10:	21 c0       	rjmp	.+66     	; 0x54 <__bad_interrupt>
+  12:	20 c0       	rjmp	.+64     	; 0x54 <__bad_interrupt>
+  14:	1f c0       	rjmp	.+62     	; 0x54 <__bad_interrupt>
+  16:	24 c2       	rjmp	.+1096   	; 0x460 <__vector_11>
+  18:	ac c1       	rjmp	.+856    	; 0x372 <__vector_12>
+  1a:	1c c0       	rjmp	.+56     	; 0x54 <__bad_interrupt>
+  1c:	17 c2       	rjmp	.+1070   	; 0x44c <__vector_14>
+  1e:	1a c0       	rjmp	.+52     	; 0x54 <__bad_interrupt>
+  20:	19 c0       	rjmp	.+50     	; 0x54 <__bad_interrupt>
+  22:	18 c0       	rjmp	.+48     	; 0x54 <__bad_interrupt>
+  24:	97 c0       	rjmp	.+302    	; 0x154 <__vector_18>
+  26:	fc c0       	rjmp	.+504    	; 0x220 <__vector_19>
+  28:	23 c1       	rjmp	.+582    	; 0x270 <__vector_20>
+  2a:	14 c0       	rjmp	.+40     	; 0x54 <__bad_interrupt>
+  2c:	13 c0       	rjmp	.+38     	; 0x54 <__bad_interrupt>
+  2e:	12 c0       	rjmp	.+36     	; 0x54 <__bad_interrupt>
+  30:	11 c0       	rjmp	.+34     	; 0x54 <__bad_interrupt>
+  32:	10 c0       	rjmp	.+32     	; 0x54 <__bad_interrupt>
+
+00000034 <__ctors_end>:
+  34:	11 24       	eor	r1, r1
+  36:	1f be       	out	0x3f, r1	; 63
+  38:	cf ef       	ldi	r28, 0xFF	; 255
+  3a:	d2 e0       	ldi	r29, 0x02	; 2
+  3c:	de bf       	out	0x3e, r29	; 62
+  3e:	cd bf       	out	0x3d, r28	; 61
+
+00000040 <__do_clear_bss>:
+  40:	11 e0       	ldi	r17, 0x01	; 1
+  42:	a0 e0       	ldi	r26, 0x00	; 0
+  44:	b1 e0       	ldi	r27, 0x01	; 1
+  46:	01 c0       	rjmp	.+2      	; 0x4a <.do_clear_bss_start>
+
+00000048 <.do_clear_bss_loop>:
+  48:	1d 92       	st	X+, r1
+
+0000004a <.do_clear_bss_start>:
+  4a:	a7 31       	cpi	r26, 0x17	; 23
+  4c:	b1 07       	cpc	r27, r17
+  4e:	e1 f7       	brne	.-8      	; 0x48 <.do_clear_bss_loop>
+  50:	11 d2       	rcall	.+1058   	; 0x474 <main>
+  52:	98 c2       	rjmp	.+1328   	; 0x584 <_exit>
+
+00000054 <__bad_interrupt>:
+  54:	d5 cf       	rjmp	.-86     	; 0x0 <__vectors>
+
+00000056 <SendKey>:
+
+  This routine sends a key press event over the RS485 link.
+ */
+void SendKey(Uint8 Key)
+{
+  TxBuf[BCPAddr] = (BCAKeypadController << 4) | BCAMP3Contoller;
+  56:	90 e1       	ldi	r25, 0x10	; 16
+  58:	90 93 01 01 	sts	0x0101, r25
+  TxBuf[BCPType] = BCTKey;
+  5c:	97 e0       	ldi	r25, 0x07	; 7
+  5e:	90 93 02 01 	sts	0x0102, r25
+  TxBuf[BCPParam1] = Key;
+  62:	80 93 03 01 	sts	0x0103, r24
+  TxBuf[BCPParam2] = 0;
+  66:	10 92 04 01 	sts	0x0104, r1
+  BCMessageSend(TxBuf, true);           // Send the reply
+  6a:	61 e0       	ldi	r22, 0x01	; 1
+  6c:	80 e0       	ldi	r24, 0x00	; 0
+  6e:	91 e0       	ldi	r25, 0x01	; 1
+  70:	1b c0       	rjmp	.+54     	; 0xa8 <BCMessageSend>
+
+00000072 <BCMessageInit>:
+  This routine prepares for board to board communications.  It is passed the
+  address to use for sending
+ */
+void BCMessageInit(Uint8 OurAddress)
+{
+  ClearBit(RS485DEPort, RS485DE);       // Turn off RS485 driver
+  72:	5c 98       	cbi	0x0b, 4	; 11
+  BCRXAvail = false;
+  74:	10 92 07 01 	sts	0x0107, r1
+  BCTXBusy  = false;
+  78:	10 92 09 01 	sts	0x0109, r1
+  BCTXPos   = 0;
+  7c:	10 92 0a 01 	sts	0x010A, r1
+  BCRXPos   = 0;
+  80:	10 92 06 01 	sts	0x0106, r1
+  RXBuf     = NULL;
+  84:	10 92 0c 01 	sts	0x010C, r1
+  88:	10 92 0b 01 	sts	0x010B, r1
+  BCOurAddress = OurAddress;
+  8c:	80 93 08 01 	sts	0x0108, r24
+
+  UBRR1H = (uint8) BaudRate1 >> 8;          // Set the baud rate
+  90:	10 92 c5 00 	sts	0x00C5, r1
+  UBRR1L = (uint8) BaudRate1;
+  94:	8f e1       	ldi	r24, 0x1F	; 31
+  96:	80 93 c4 00 	sts	0x00C4, r24
+
+//  UCSR1B = (1 << RXEN1) | (1 << TXEN1) | (1<<RXCIE1) | (1<<TXCIE1); // Enable UART RX, TX, RX interrupt and TX complete interrupt
+  UCSR1B = (1 << RXEN1) | (1 << TXEN1) | (1<<TXCIE1); // Enable UART RX, TX, RX interrupt and TX complete interrupt
+  9a:	88 e5       	ldi	r24, 0x58	; 88
+  9c:	80 93 c1 00 	sts	0x00C1, r24
+  UCSR1C = (1 << UCSZ11) | (1 << UCSZ10);   // Set up as 8N1
+  a0:	86 e0       	ldi	r24, 0x06	; 6
+  a2:	80 93 c2 00 	sts	0x00C2, r24
+  a6:	08 95       	ret
+
+000000a8 <BCMessageSend>:
+  This routine will send a board comms message.  If busy it will wait before
+  sending.  It will fill in the header, sender and checksum.  The user callers
+  should set up destination address, type and parameters.
+ */
+void BCMessageSend(Uint8 *TxMsg, bool WaitForSend)
+{
+  a8:	0f 93       	push	r16
+  aa:	1f 93       	push	r17
+  ac:	cf 93       	push	r28
+  ae:	df 93       	push	r29
+  b0:	1f 92       	push	r1
+  b2:	cd b7       	in	r28, 0x3d	; 61
+  b4:	de b7       	in	r29, 0x3e	; 62
+  b6:	8c 01       	movw	r16, r24
+    UART_TxStr("BCMessageSend BCTXBusy\r\n");
+  if (BCRXPos)
+    UART_TxStr("BCMessageSend BCRXPos\r\n");
+#endif
+
+  while(BCTXBusy || BCRXPos);  // Wait for last TX to complete and RX idle
+  b8:	80 91 09 01 	lds	r24, 0x0109
+  bc:	81 11       	cpse	r24, r1
+  be:	fc cf       	rjmp	.-8      	; 0xb8 <BCMessageSend+0x10>
+  c0:	80 91 06 01 	lds	r24, 0x0106
+  c4:	81 11       	cpse	r24, r1
+  c6:	f8 cf       	rjmp	.-16     	; 0xb8 <BCMessageSend+0x10>
+#ifdef  SecondUART
+#ifdef DumpComms
+  UART_TxStr("BCMessageSend 01 ");
+#endif
+#endif
+  TxMsg[BCPSOH]  = SOH;
+  c8:	81 e0       	ldi	r24, 0x01	; 1
+  ca:	f8 01       	movw	r30, r16
+  cc:	80 83       	st	Z, r24
+  TxMsg[BCPAddr] = (TxMsg[BCPAddr] & 0b00001111) | (BCOurAddress << 4);
+  ce:	21 81       	ldd	r18, Z+1	; 0x01
+  d0:	2f 70       	andi	r18, 0x0F	; 15
+  d2:	80 91 08 01 	lds	r24, 0x0108
+  d6:	f0 e1       	ldi	r31, 0x10	; 16
+  d8:	8f 9f       	mul	r24, r31
+  da:	c0 01       	movw	r24, r0
+  dc:	11 24       	eor	r1, r1
+  de:	28 2b       	or	r18, r24
+  e0:	f8 01       	movw	r30, r16
+  e2:	21 83       	std	Z+1, r18	; 0x01
+
+  This routine will send a board comms message.  If busy it will wait before
+  sending.  It will fill in the header, sender and checksum.  The user callers
+  should set up destination address, type and parameters.
+ */
+void BCMessageSend(Uint8 *TxMsg, bool WaitForSend)
+  e4:	31 96       	adiw	r30, 0x01	; 1
+  UART_TxStr("BCMessageSend 01 ");
+#endif
+#endif
+  TxMsg[BCPSOH]  = SOH;
+  TxMsg[BCPAddr] = (TxMsg[BCPAddr] & 0b00001111) | (BCOurAddress << 4);
+  Checksum = SOH;
+  e6:	81 e0       	ldi	r24, 0x01	; 1
+  for (Pos = BCPAddr; Pos < BCPChecksum; Pos++) {
+  e8:	91 e0       	ldi	r25, 0x01	; 1
+    Checksum += TxMsg[Pos];
+  ea:	21 91       	ld	r18, Z+
+  ec:	82 0f       	add	r24, r18
+#endif
+#endif
+  TxMsg[BCPSOH]  = SOH;
+  TxMsg[BCPAddr] = (TxMsg[BCPAddr] & 0b00001111) | (BCOurAddress << 4);
+  Checksum = SOH;
+  for (Pos = BCPAddr; Pos < BCPChecksum; Pos++) {
+  ee:	9f 5f       	subi	r25, 0xFF	; 255
+  f0:	95 30       	cpi	r25, 0x05	; 5
+  f2:	d9 f7       	brne	.-10     	; 0xea <BCMessageSend+0x42>
+    UART_TxUint8(TxMsg[Pos]);
+    UART_TxChar(' ');
+#endif
+#endif
+  }
+  TxMsg[BCPChecksum] = Checksum;
+  f4:	f8 01       	movw	r30, r16
+  f6:	85 83       	std	Z+5, r24	; 0x05
+#endif
+#endif
+
+  // Send it
+
+  SetBit (RS485DEPort, RS485DE);      // Turn on RS485 driver
+  f8:	5c 9a       	sbi	0x0b, 4	; 11
+  DelayMS(1);
+  fa:	81 e0       	ldi	r24, 0x01	; 1
+  fc:	90 e0       	ldi	r25, 0x00	; 0
+  fe:	69 83       	std	Y+1, r22	; 0x01
+ 100:	8f d1       	rcall	.+798    	; 0x420 <DelayMS>
+  BCTXBusy = true;
+ 102:	81 e0       	ldi	r24, 0x01	; 1
+ 104:	80 93 09 01 	sts	0x0109, r24
+  TXBuf    = TxMsg;  // Set up the buffer and kick off the actual transmission
+ 108:	10 93 0e 01 	sts	0x010E, r17
+ 10c:	00 93 0d 01 	sts	0x010D, r16
+  BCTXPos  = 0;
+ 110:	10 92 0a 01 	sts	0x010A, r1
+  UCSR1B   |= (1<<UDRIE1);  // Enable UDRE and TXC interrupts
+ 114:	80 91 c1 00 	lds	r24, 0x00C1
+ 118:	80 62       	ori	r24, 0x20	; 32
+ 11a:	80 93 c1 00 	sts	0x00C1, r24
+
+  if(WaitForSend)
+ 11e:	69 81       	ldd	r22, Y+1	; 0x01
+ 120:	66 23       	and	r22, r22
+ 122:	21 f0       	breq	.+8      	; 0x12c <BCMessageSend+0x84>
+    while(BCTXBusy);  // Wait for last TX to complete
+ 124:	80 91 09 01 	lds	r24, 0x0109
+ 128:	81 11       	cpse	r24, r1
+ 12a:	fc cf       	rjmp	.-8      	; 0x124 <BCMessageSend+0x7c>
+}
+ 12c:	0f 90       	pop	r0
+ 12e:	df 91       	pop	r29
+ 130:	cf 91       	pop	r28
+ 132:	1f 91       	pop	r17
+ 134:	0f 91       	pop	r16
+ 136:	08 95       	ret
+
+00000138 <BCMessageReceive>:
+
+  This routine will allow the reception a board comms message.
+ */
+void BCMessageReceive(Uint8 *RxMsg)
+{
+  BCRXPos   = 0;
+ 138:	10 92 06 01 	sts	0x0106, r1
+  RXBuf     = RxMsg;
+ 13c:	90 93 0c 01 	sts	0x010C, r25
+ 140:	80 93 0b 01 	sts	0x010B, r24
+  BCRXAvail = false;
+ 144:	10 92 07 01 	sts	0x0107, r1
+  UCSR1B |= 1 << RXCIE1;
+ 148:	e1 ec       	ldi	r30, 0xC1	; 193
+ 14a:	f0 e0       	ldi	r31, 0x00	; 0
+ 14c:	80 81       	ld	r24, Z
+ 14e:	80 68       	ori	r24, 0x80	; 128
+ 150:	80 83       	st	Z, r24
+ 152:	08 95       	ret
+
+00000154 <__vector_18>:
+  USART1 receive interrupt routine
+
+  This routine will handle a receive interrupt.
+ */
+ISR(USART1_RX_vect)
+{
+ 154:	1f 92       	push	r1
+ 156:	0f 92       	push	r0
+ 158:	0f b6       	in	r0, 0x3f	; 63
+ 15a:	0f 92       	push	r0
+ 15c:	11 24       	eor	r1, r1
+ 15e:	2f 93       	push	r18
+ 160:	3f 93       	push	r19
+ 162:	4f 93       	push	r20
+ 164:	8f 93       	push	r24
+ 166:	9f 93       	push	r25
+ 168:	af 93       	push	r26
+ 16a:	bf 93       	push	r27
+ 16c:	ef 93       	push	r30
+ 16e:	ff 93       	push	r31
+  Uint8 RxData;
+  Uint8 Checksum;
+  Uint8 Pos;
+
+  RxData = UDR1;  // Get the incoming byte
+ 170:	40 91 c6 00 	lds	r20, 0x00C6
+
+  if ((RXBuf != NULL) && (BCRXPos < BCMsgSize) && !BCRXAvail) {
+ 174:	80 91 0b 01 	lds	r24, 0x010B
+ 178:	90 91 0c 01 	lds	r25, 0x010C
+ 17c:	00 97       	sbiw	r24, 0x00	; 0
+ 17e:	09 f4       	brne	.+2      	; 0x182 <__vector_18+0x2e>
+ 180:	41 c0       	rjmp	.+130    	; 0x204 <__vector_18+0xb0>
+ 182:	20 91 06 01 	lds	r18, 0x0106
+ 186:	26 30       	cpi	r18, 0x06	; 6
+ 188:	e8 f5       	brcc	.+122    	; 0x204 <__vector_18+0xb0>
+ 18a:	20 91 07 01 	lds	r18, 0x0107
+ 18e:	21 11       	cpse	r18, r1
+ 190:	39 c0       	rjmp	.+114    	; 0x204 <__vector_18+0xb0>
+    RS485RXTimeout = 2;
+ 192:	22 e0       	ldi	r18, 0x02	; 2
+ 194:	30 e0       	ldi	r19, 0x00	; 0
+ 196:	30 93 12 01 	sts	0x0112, r19
+ 19a:	20 93 11 01 	sts	0x0111, r18
+    RXBuf[BCRXPos] = RxData;
+ 19e:	20 91 06 01 	lds	r18, 0x0106
+ 1a2:	fc 01       	movw	r30, r24
+ 1a4:	e2 0f       	add	r30, r18
+ 1a6:	f1 1d       	adc	r31, r1
+ 1a8:	40 83       	st	Z, r20
+    if (!((BCRXPos == BCPSOH) && (RxData != SOH))) { // Check for bad start of frame
+ 1aa:	80 91 06 01 	lds	r24, 0x0106
+ 1ae:	81 11       	cpse	r24, r1
+ 1b0:	02 c0       	rjmp	.+4      	; 0x1b6 <__vector_18+0x62>
+ 1b2:	41 30       	cpi	r20, 0x01	; 1
+ 1b4:	39 f5       	brne	.+78     	; 0x204 <__vector_18+0xb0>
+      if (BCRXPos >= (BCMsgSize-1)) { // If end of frame reached
+ 1b6:	80 91 06 01 	lds	r24, 0x0106
+ 1ba:	85 30       	cpi	r24, 0x05	; 5
+ 1bc:	f0 f0       	brcs	.+60     	; 0x1fa <__vector_18+0xa6>
+        RS485RXTimeout = 0;     // stop interpacket timeout
+ 1be:	10 92 12 01 	sts	0x0112, r1
+ 1c2:	10 92 11 01 	sts	0x0111, r1
+        Checksum = SOH;
+        for (Pos = BCPAddr; Pos < BCPChecksum; Pos++)
+          Checksum += RXBuf[Pos];
+ 1c6:	e0 91 0b 01 	lds	r30, 0x010B
+ 1ca:	f0 91 0c 01 	lds	r31, 0x010C
+/*
+  USART1 receive interrupt routine
+
+  This routine will handle a receive interrupt.
+ */
+ISR(USART1_RX_vect)
+ 1ce:	df 01       	movw	r26, r30
+ 1d0:	11 96       	adiw	r26, 0x01	; 1
+ 1d2:	94 e0       	ldi	r25, 0x04	; 4
+    RS485RXTimeout = 2;
+    RXBuf[BCRXPos] = RxData;
+    if (!((BCRXPos == BCPSOH) && (RxData != SOH))) { // Check for bad start of frame
+      if (BCRXPos >= (BCMsgSize-1)) { // If end of frame reached
+        RS485RXTimeout = 0;     // stop interpacket timeout
+        Checksum = SOH;
+ 1d4:	81 e0       	ldi	r24, 0x01	; 1
+        for (Pos = BCPAddr; Pos < BCPChecksum; Pos++)
+          Checksum += RXBuf[Pos];
+ 1d6:	2d 91       	ld	r18, X+
+ 1d8:	82 0f       	add	r24, r18
+ 1da:	91 50       	subi	r25, 0x01	; 1
+    RXBuf[BCRXPos] = RxData;
+    if (!((BCRXPos == BCPSOH) && (RxData != SOH))) { // Check for bad start of frame
+      if (BCRXPos >= (BCMsgSize-1)) { // If end of frame reached
+        RS485RXTimeout = 0;     // stop interpacket timeout
+        Checksum = SOH;
+        for (Pos = BCPAddr; Pos < BCPChecksum; Pos++)
+ 1dc:	e1 f7       	brne	.-8      	; 0x1d6 <__vector_18+0x82>
+          Checksum += RXBuf[Pos];
+        if (Checksum == RxData) { // If checksum is good
+ 1de:	84 13       	cpse	r24, r20
+ 1e0:	09 c0       	rjmp	.+18     	; 0x1f4 <__vector_18+0xa0>
+          if ((RXBuf[BCPAddr] & 0b00001111) == BCOurAddress) {  // Check if for us
+ 1e2:	81 81       	ldd	r24, Z+1	; 0x01
+ 1e4:	8f 70       	andi	r24, 0x0F	; 15
+ 1e6:	90 91 08 01 	lds	r25, 0x0108
+ 1ea:	89 13       	cpse	r24, r25
+ 1ec:	03 c0       	rjmp	.+6      	; 0x1f4 <__vector_18+0xa0>
+            BCRXAvail = true;       // then advise new frame is ready
+ 1ee:	81 e0       	ldi	r24, 0x01	; 1
+ 1f0:	80 93 07 01 	sts	0x0107, r24
+#endif
+          } else {
+          }
+        } else {
+        }
+        BCRXPos = 0;              // Let the transmit routines know we are not in frame
+ 1f4:	10 92 06 01 	sts	0x0106, r1
+ 1f8:	05 c0       	rjmp	.+10     	; 0x204 <__vector_18+0xb0>
+      } else {
+        BCRXPos++;                // We saved a valid packet character so move on to next
+ 1fa:	80 91 06 01 	lds	r24, 0x0106
+ 1fe:	8f 5f       	subi	r24, 0xFF	; 255
+ 200:	80 93 06 01 	sts	0x0106, r24
+      }
+    } else {
+    }
+  }
+}
+ 204:	ff 91       	pop	r31
+ 206:	ef 91       	pop	r30
+ 208:	bf 91       	pop	r27
+ 20a:	af 91       	pop	r26
+ 20c:	9f 91       	pop	r25
+ 20e:	8f 91       	pop	r24
+ 210:	4f 91       	pop	r20
+ 212:	3f 91       	pop	r19
+ 214:	2f 91       	pop	r18
+ 216:	0f 90       	pop	r0
+ 218:	0f be       	out	0x3f, r0	; 63
+ 21a:	0f 90       	pop	r0
+ 21c:	1f 90       	pop	r1
+ 21e:	18 95       	reti
+
+00000220 <__vector_19>:
+  USART1 transmit interrupt routine
+
+  This routine will handle a transmit interrupt.
+ */
+ISR(USART1_UDRE_vect)
+{
+ 220:	1f 92       	push	r1
+ 222:	0f 92       	push	r0
+ 224:	0f b6       	in	r0, 0x3f	; 63
+ 226:	0f 92       	push	r0
+ 228:	11 24       	eor	r1, r1
+ 22a:	8f 93       	push	r24
+ 22c:	9f 93       	push	r25
+ 22e:	ef 93       	push	r30
+ 230:	ff 93       	push	r31
+  if (BCTXPos < BCMsgSize) {  // If frame not complete
+ 232:	80 91 0a 01 	lds	r24, 0x010A
+ 236:	86 30       	cpi	r24, 0x06	; 6
+ 238:	68 f4       	brcc	.+26     	; 0x254 <__vector_19+0x34>
+    UDR1 = TXBuf[BCTXPos];
+ 23a:	e0 91 0d 01 	lds	r30, 0x010D
+ 23e:	f0 91 0e 01 	lds	r31, 0x010E
+ 242:	e8 0f       	add	r30, r24
+ 244:	f1 1d       	adc	r31, r1
+ 246:	90 81       	ld	r25, Z
+ 248:	90 93 c6 00 	sts	0x00C6, r25
+    BCTXPos++;
+ 24c:	8f 5f       	subi	r24, 0xFF	; 255
+ 24e:	80 93 0a 01 	sts	0x010A, r24
+ 252:	05 c0       	rjmp	.+10     	; 0x25e <__vector_19+0x3e>
+  } else {
+    UCSR1B &= ~(1<<UDRIE1);         // Disable UDRE interrupt
+ 254:	80 91 c1 00 	lds	r24, 0x00C1
+ 258:	8f 7d       	andi	r24, 0xDF	; 223
+ 25a:	80 93 c1 00 	sts	0x00C1, r24
+  }
+}
+ 25e:	ff 91       	pop	r31
+ 260:	ef 91       	pop	r30
+ 262:	9f 91       	pop	r25
+ 264:	8f 91       	pop	r24
+ 266:	0f 90       	pop	r0
+ 268:	0f be       	out	0x3f, r0	; 63
+ 26a:	0f 90       	pop	r0
+ 26c:	1f 90       	pop	r1
+ 26e:	18 95       	reti
+
+00000270 <__vector_20>:
+  USART1 transmit interrupt complete routine
+
+  This routine will handle a transmit complete interrupt.
+ */
+ISR(USART1_TX_vect)
+{
+ 270:	1f 92       	push	r1
+ 272:	0f 92       	push	r0
+ 274:	0f b6       	in	r0, 0x3f	; 63
+ 276:	0f 92       	push	r0
+ 278:	11 24       	eor	r1, r1
+ 27a:	8f 93       	push	r24
+ 27c:	9f 93       	push	r25
+  RS485TXDrop = 1;  // Set the transmit driver to turn off in 1mS
+ 27e:	81 e0       	ldi	r24, 0x01	; 1
+ 280:	90 e0       	ldi	r25, 0x00	; 0
+ 282:	90 93 10 01 	sts	0x0110, r25
+ 286:	80 93 0f 01 	sts	0x010F, r24
+}
+ 28a:	9f 91       	pop	r25
+ 28c:	8f 91       	pop	r24
+ 28e:	0f 90       	pop	r0
+ 290:	0f be       	out	0x3f, r0	; 63
+ 292:	0f 90       	pop	r0
+ 294:	1f 90       	pop	r1
+ 296:	18 95       	reti
+
+00000298 <GetKey>:
+  1 to n, or 0 if no key.
+*/
+#if HWVer == 1
+Uint8 GetKey(void)
+{
+  if (!GetBit(Switch1to6InPin, Switch1In))
+ 298:	35 9b       	sbis	0x06, 5	; 6
+ 29a:	0e c0       	rjmp	.+28     	; 0x2b8 <GetKey+0x20>
+    return 1;
+
+  if (!GetBit(Switch1to6InPin, Switch2In))
+ 29c:	34 9b       	sbis	0x06, 4	; 6
+ 29e:	0e c0       	rjmp	.+28     	; 0x2bc <GetKey+0x24>
+    return 2;
+
+  if (!GetBit(Switch1to6InPin, Switch3In))
+ 2a0:	33 9b       	sbis	0x06, 3	; 6
+ 2a2:	0e c0       	rjmp	.+28     	; 0x2c0 <GetKey+0x28>
+    return 3;
+
+  if (!GetBit(Switch1to6InPin, Switch4In))
+ 2a4:	32 9b       	sbis	0x06, 2	; 6
+ 2a6:	0e c0       	rjmp	.+28     	; 0x2c4 <GetKey+0x2c>
+    return 4;
+
+  if (!GetBit(Switch1to6InPin, Switch5In))
+ 2a8:	31 9b       	sbis	0x06, 1	; 6
+ 2aa:	0e c0       	rjmp	.+28     	; 0x2c8 <GetKey+0x30>
+    return 5;
+
+  if (!GetBit(Switch1to6InPin, Switch6In))
+ 2ac:	30 9b       	sbis	0x06, 0	; 6
+ 2ae:	0e c0       	rjmp	.+28     	; 0x2cc <GetKey+0x34>
+    return 6;
+
+  if (!GetBit(Switch7InPin, Switch7In))
+ 2b0:	4b 99       	sbic	0x09, 3	; 9
+ 2b2:	0e c0       	rjmp	.+28     	; 0x2d0 <GetKey+0x38>
+    return 7;
+ 2b4:	87 e0       	ldi	r24, 0x07	; 7
+ 2b6:	08 95       	ret
+*/
+#if HWVer == 1
+Uint8 GetKey(void)
+{
+  if (!GetBit(Switch1to6InPin, Switch1In))
+    return 1;
+ 2b8:	81 e0       	ldi	r24, 0x01	; 1
+ 2ba:	08 95       	ret
+
+  if (!GetBit(Switch1to6InPin, Switch2In))
+    return 2;
+ 2bc:	82 e0       	ldi	r24, 0x02	; 2
+ 2be:	08 95       	ret
+
+  if (!GetBit(Switch1to6InPin, Switch3In))
+    return 3;
+ 2c0:	83 e0       	ldi	r24, 0x03	; 3
+ 2c2:	08 95       	ret
+
+  if (!GetBit(Switch1to6InPin, Switch4In))
+    return 4;
+ 2c4:	84 e0       	ldi	r24, 0x04	; 4
+ 2c6:	08 95       	ret
+
+  if (!GetBit(Switch1to6InPin, Switch5In))
+    return 5;
+ 2c8:	85 e0       	ldi	r24, 0x05	; 5
+ 2ca:	08 95       	ret
+
+  if (!GetBit(Switch1to6InPin, Switch6In))
+    return 6;
+ 2cc:	86 e0       	ldi	r24, 0x06	; 6
+ 2ce:	08 95       	ret
+
+  if (!GetBit(Switch7InPin, Switch7In))
+    return 7;
+
+  return 0;
+ 2d0:	80 e0       	ldi	r24, 0x00	; 0
+}
+ 2d2:	08 95       	ret
+
+000002d4 <SetLamps>:
+
+  This routine sets the Lamps as a bit pattern.
+*/
+void SetLamps(Uint8 NewLamps)
+{
+  if(NewLamps & 0b1)
+ 2d4:	80 ff       	sbrs	r24, 0
+ 2d6:	02 c0       	rjmp	.+4      	; 0x2dc <SetLamps+0x8>
+    ClearBit(LED1to3Port, LED1);
+ 2d8:	5d 98       	cbi	0x0b, 5	; 11
+ 2da:	01 c0       	rjmp	.+2      	; 0x2de <SetLamps+0xa>
+  else
+    SetBit(LED1to3Port, LED1);
+ 2dc:	5d 9a       	sbi	0x0b, 5	; 11
+
+  if(NewLamps & 0b10)
+ 2de:	81 ff       	sbrs	r24, 1
+ 2e0:	02 c0       	rjmp	.+4      	; 0x2e6 <SetLamps+0x12>
+    ClearBit(LED1to3Port, LED2);
+ 2e2:	5e 98       	cbi	0x0b, 6	; 11
+ 2e4:	01 c0       	rjmp	.+2      	; 0x2e8 <SetLamps+0x14>
+  else
+    SetBit(LED1to3Port, LED2);
+ 2e6:	5e 9a       	sbi	0x0b, 6	; 11
+
+  if(NewLamps & 0b100)
+ 2e8:	82 ff       	sbrs	r24, 2
+ 2ea:	02 c0       	rjmp	.+4      	; 0x2f0 <SetLamps+0x1c>
+    ClearBit(LED1to3Port, LED3);
+ 2ec:	5f 98       	cbi	0x0b, 7	; 11
+ 2ee:	01 c0       	rjmp	.+2      	; 0x2f2 <SetLamps+0x1e>
+  else
+    SetBit(LED1to3Port, LED3);
+ 2f0:	5f 9a       	sbi	0x0b, 7	; 11
+
+  if(NewLamps & 0b1000)
+ 2f2:	83 ff       	sbrs	r24, 3
+ 2f4:	02 c0       	rjmp	.+4      	; 0x2fa <SetLamps+0x26>
+    ClearBit(LED4to7Port, LED4);
+ 2f6:	28 98       	cbi	0x05, 0	; 5
+ 2f8:	01 c0       	rjmp	.+2      	; 0x2fc <SetLamps+0x28>
+  else
+    SetBit(LED4to7Port, LED4);
+ 2fa:	28 9a       	sbi	0x05, 0	; 5
+
+#ifndef DebugLamps
+  if(NewLamps & 0b10000)
+ 2fc:	84 ff       	sbrs	r24, 4
+ 2fe:	02 c0       	rjmp	.+4      	; 0x304 <__stack+0x5>
+    SetBit(LEDLogoPort, LEDLogo);
+ 300:	5a 9a       	sbi	0x0b, 2	; 11
+ 302:	01 c0       	rjmp	.+2      	; 0x306 <__stack+0x7>
+  else
+    ClearBit(LEDLogoPort, LEDLogo);
+ 304:	5a 98       	cbi	0x0b, 2	; 11
+#endif
+
+  if(NewLamps & 0b100000)
+ 306:	85 ff       	sbrs	r24, 5
+ 308:	02 c0       	rjmp	.+4      	; 0x30e <__stack+0xf>
+    SetBit(LED4to7Port, LED6);
+ 30a:	29 9a       	sbi	0x05, 1	; 5
+ 30c:	01 c0       	rjmp	.+2      	; 0x310 <__stack+0x11>
+  else
+    ClearBit(LED4to7Port, LED6);
+ 30e:	29 98       	cbi	0x05, 1	; 5
+
+  if(NewLamps & 0b1000000)
+ 310:	86 ff       	sbrs	r24, 6
+ 312:	02 c0       	rjmp	.+4      	; 0x318 <__stack+0x19>
+    SetBit(LED4to7Port, LED7);
+ 314:	2a 9a       	sbi	0x05, 2	; 5
+ 316:	08 95       	ret
+  else
+    ClearBit(LED4to7Port, LED7);
+ 318:	2a 98       	cbi	0x05, 2	; 5
+ 31a:	08 95       	ret
+
+0000031c <SetLamp>:
+
+  This routine sets the Lamps.  0 = off, 1 to 8 for the lamp, all others off.
+*/
+void SetLamp(Uint8 Lamp)
+{
+  if ((Lamp > 0) && (Lamp <= 7))
+ 31c:	98 2f       	mov	r25, r24
+ 31e:	91 50       	subi	r25, 0x01	; 1
+ 320:	97 30       	cpi	r25, 0x07	; 7
+ 322:	58 f4       	brcc	.+22     	; 0x33a <SetLamp+0x1e>
+    SetLamps(1 << (Lamp - 1));  // Set the bit pattern for the Lamps
+ 324:	28 2f       	mov	r18, r24
+ 326:	30 e0       	ldi	r19, 0x00	; 0
+ 328:	21 50       	subi	r18, 0x01	; 1
+ 32a:	31 09       	sbc	r19, r1
+ 32c:	81 e0       	ldi	r24, 0x01	; 1
+ 32e:	90 e0       	ldi	r25, 0x00	; 0
+ 330:	01 c0       	rjmp	.+2      	; 0x334 <SetLamp+0x18>
+ 332:	88 0f       	add	r24, r24
+ 334:	2a 95       	dec	r18
+ 336:	ea f7       	brpl	.-6      	; 0x332 <SetLamp+0x16>
+ 338:	01 c0       	rjmp	.+2      	; 0x33c <SetLamp+0x20>
+  else
+    SetLamps(0);
+ 33a:	80 e0       	ldi	r24, 0x00	; 0
+ 33c:	cb cf       	rjmp	.-106    	; 0x2d4 <SetLamps>
+
+0000033e <Timer_Init>:
+ */
+void Timer_Init(void)
+{
+  // Timer 0, 36kHz pulses using CTC mode and pin toggle while blasting.  Tick is Xtal/8 = 400nS.
+
+  TCCR0A = 1 << WGM01;
+ 33e:	82 e0       	ldi	r24, 0x02	; 2
+ 340:	84 bd       	out	0x24, r24	; 36
+  TCCR0B = (1 << CS01);           // Prescaler divide by 8 = 3MHz/333nS tick
+ 342:	85 bd       	out	0x25, r24	; 37
+  OCR0A  = 39;                  // 36kHz from 3MHz clock
+ 344:	97 e2       	ldi	r25, 0x27	; 39
+ 346:	97 bd       	out	0x27, r25	; 39
+  OCR0B  = 39;                  // 36kHz from 3MHz clock
+ 348:	98 bd       	out	0x28, r25	; 40
+  TIMSK0 = (1 << OCIE0A);       // 36kHz interrupt for use on LED PWM
+ 34a:	80 93 6e 00 	sts	0x006E, r24
+
+  // Timer 1, normal mode. Tick is Xtal/8 = 400nS period for maximum delay of 26mS
+
+  TCCR1A = 0;
+ 34e:	10 92 80 00 	sts	0x0080, r1
+  TCCR1B = (1 << CS11);                                 // Prescaler divide by 8 = 2.5MHz/400nS tick
+ 352:	80 93 81 00 	sts	0x0081, r24
+  TIMSK1 =  (1 << OCIE1A) | (1 << OCIE1B);              // Enable delay
+ 356:	86 e0       	ldi	r24, 0x06	; 6
+ 358:	80 93 6f 00 	sts	0x006F, r24
+  TIFR1 =   (1 << OCF1A) | (1 << OCF1B) | (1 << ICF1);  // Clear off interrupt flags
+ 35c:	86 e2       	ldi	r24, 0x26	; 38
+ 35e:	86 bb       	out	0x16, r24	; 22
+  OCR1B = OCR1B + 2500;                                 // Reload for next tick, 2500 x 400nS = 1mS
+ 360:	ea e8       	ldi	r30, 0x8A	; 138
+ 362:	f0 e0       	ldi	r31, 0x00	; 0
+ 364:	80 81       	ld	r24, Z
+ 366:	91 81       	ldd	r25, Z+1	; 0x01
+ 368:	8c 53       	subi	r24, 0x3C	; 60
+ 36a:	96 4f       	sbci	r25, 0xF6	; 246
+ 36c:	91 83       	std	Z+1, r25	; 0x01
+ 36e:	80 83       	st	Z, r24
+ 370:	08 95       	ret
+
+00000372 <__vector_12>:
+  Timer 1 output compare B interrupt service
+
+  This timer is used for a 1mS periodic interrupt.
+ */
+ISR(TIMER1_COMPB_vect)
+{
+ 372:	1f 92       	push	r1
+ 374:	0f 92       	push	r0
+ 376:	0f b6       	in	r0, 0x3f	; 63
+ 378:	0f 92       	push	r0
+ 37a:	11 24       	eor	r1, r1
+ 37c:	8f 93       	push	r24
+ 37e:	9f 93       	push	r25
+  OCR1B = OCR1B + 2500;   // Reload for next tick, 2500 x 400nS = 1mS
+ 380:	80 91 8a 00 	lds	r24, 0x008A
+ 384:	90 91 8b 00 	lds	r25, 0x008B
+ 388:	8c 53       	subi	r24, 0x3C	; 60
+ 38a:	96 4f       	sbci	r25, 0xF6	; 246
+ 38c:	90 93 8b 00 	sts	0x008B, r25
+ 390:	80 93 8a 00 	sts	0x008A, r24
+
+  // Timer user for DelayMS
+
+  if (CountDown)
+ 394:	80 91 15 01 	lds	r24, 0x0115
+ 398:	90 91 16 01 	lds	r25, 0x0116
+ 39c:	89 2b       	or	r24, r25
+ 39e:	49 f0       	breq	.+18     	; 0x3b2 <__vector_12+0x40>
+    CountDown--;
+ 3a0:	80 91 15 01 	lds	r24, 0x0115
+ 3a4:	90 91 16 01 	lds	r25, 0x0116
+ 3a8:	01 97       	sbiw	r24, 0x01	; 1
+ 3aa:	90 93 16 01 	sts	0x0116, r25
+ 3ae:	80 93 15 01 	sts	0x0115, r24
+
+  // Timer used for Timer_Clear and Timer_Read
+
+  CountUp++;
+ 3b2:	80 91 13 01 	lds	r24, 0x0113
+ 3b6:	90 91 14 01 	lds	r25, 0x0114
+ 3ba:	01 96       	adiw	r24, 0x01	; 1
+ 3bc:	90 93 14 01 	sts	0x0114, r25
+ 3c0:	80 93 13 01 	sts	0x0113, r24
+
+  // Do count down for RS485 transmit stop
+
+  if (RS485TXDrop)
+ 3c4:	80 91 0f 01 	lds	r24, 0x010F
+ 3c8:	90 91 10 01 	lds	r25, 0x0110
+ 3cc:	89 2b       	or	r24, r25
+ 3ce:	71 f0       	breq	.+28     	; 0x3ec <__vector_12+0x7a>
+    if (!--RS485TXDrop) {
+ 3d0:	80 91 0f 01 	lds	r24, 0x010F
+ 3d4:	90 91 10 01 	lds	r25, 0x0110
+ 3d8:	01 97       	sbiw	r24, 0x01	; 1
+ 3da:	90 93 10 01 	sts	0x0110, r25
+ 3de:	80 93 0f 01 	sts	0x010F, r24
+ 3e2:	89 2b       	or	r24, r25
+ 3e4:	19 f4       	brne	.+6      	; 0x3ec <__vector_12+0x7a>
+      ClearBit (RS485DEPort, RS485DE);      // Turn off RS485 driver
+ 3e6:	5c 98       	cbi	0x0b, 4	; 11
+      BCTXBusy = false;
+ 3e8:	10 92 09 01 	sts	0x0109, r1
+    }
+
+  // Do count down for RS485 receive timeout
+
+  if (RS485RXTimeout)
+ 3ec:	80 91 11 01 	lds	r24, 0x0111
+ 3f0:	90 91 12 01 	lds	r25, 0x0112
+ 3f4:	89 2b       	or	r24, r25
+ 3f6:	69 f0       	breq	.+26     	; 0x412 <__vector_12+0xa0>
+    if (!--RS485RXTimeout) {
+ 3f8:	80 91 11 01 	lds	r24, 0x0111
+ 3fc:	90 91 12 01 	lds	r25, 0x0112
+ 400:	01 97       	sbiw	r24, 0x01	; 1
+ 402:	90 93 12 01 	sts	0x0112, r25
+ 406:	80 93 11 01 	sts	0x0111, r24
+ 40a:	89 2b       	or	r24, r25
+ 40c:	11 f4       	brne	.+4      	; 0x412 <__vector_12+0xa0>
+      BCRXPos = 0;                          // Dump any data and start again
+ 40e:	10 92 06 01 	sts	0x0106, r1
+    }
+}
+ 412:	9f 91       	pop	r25
+ 414:	8f 91       	pop	r24
+ 416:	0f 90       	pop	r0
+ 418:	0f be       	out	0x3f, r0	; 63
+ 41a:	0f 90       	pop	r0
+ 41c:	1f 90       	pop	r1
+ 41e:	18 95       	reti
+
+00000420 <DelayMS>:
+
+  This routine will delay for the supplied number of milliseconds.
+ */
+void DelayMS(Uint16 Time)
+{
+  CountDown = Time;   // CountDown is decremented in ISR every millisecond
+ 420:	90 93 16 01 	sts	0x0116, r25
+ 424:	80 93 15 01 	sts	0x0115, r24
+  while(CountDown);
+ 428:	80 91 15 01 	lds	r24, 0x0115
+ 42c:	90 91 16 01 	lds	r25, 0x0116
+ 430:	89 2b       	or	r24, r25
+ 432:	d1 f7       	brne	.-12     	; 0x428 <DelayMS+0x8>
+}
+ 434:	08 95       	ret
+
+00000436 <Timer_Clear>:
+
+  This routine clears the 1mS timer.
+ */
+void Timer_Clear(void)
+{
+  CountUp = 0;
+ 436:	10 92 14 01 	sts	0x0114, r1
+ 43a:	10 92 13 01 	sts	0x0113, r1
+ 43e:	08 95       	ret
+
+00000440 <Timer_Read>:
+
+  This routine reads the current value of the 1mS timer.
+ */
+Uint16 Timer_Read(void)
+{
+  return CountUp;
+ 440:	20 91 13 01 	lds	r18, 0x0113
+ 444:	30 91 14 01 	lds	r19, 0x0114
+}
+ 448:	c9 01       	movw	r24, r18
+ 44a:	08 95       	ret
+
+0000044c <__vector_14>:
+  Timer 0 output compare A interrupt service
+
+  This timer is used for PWM timing.
+ */
+ISR(TIMER0_COMPA_vect)
+{
+ 44c:	1f 92       	push	r1
+ 44e:	0f 92       	push	r0
+ 450:	0f b6       	in	r0, 0x3f	; 63
+ 452:	0f 92       	push	r0
+ 454:	11 24       	eor	r1, r1
+
+}
+ 456:	0f 90       	pop	r0
+ 458:	0f be       	out	0x3f, r0	; 63
+ 45a:	0f 90       	pop	r0
+ 45c:	1f 90       	pop	r1
+ 45e:	18 95       	reti
+
+00000460 <__vector_11>:
+ 460:	1f 92       	push	r1
+ 462:	0f 92       	push	r0
+ 464:	0f b6       	in	r0, 0x3f	; 63
+ 466:	0f 92       	push	r0
+ 468:	11 24       	eor	r1, r1
+ 46a:	0f 90       	pop	r0
+ 46c:	0f be       	out	0x3f, r0	; 63
+ 46e:	0f 90       	pop	r0
+ 470:	1f 90       	pop	r1
+ 472:	18 95       	reti
+
+00000474 <main>:
+
+  Program entry point
+ */
+//int main(void) __attribute__((noreturn)); // Main never returns so don't waste stack space on it.
+int main(void)
+{
+ 474:	cf 93       	push	r28
+ 476:	df 93       	push	r29
+ 478:	cd b7       	in	r28, 0x3d	; 61
+ 47a:	de b7       	in	r29, 0x3e	; 62
+ 47c:	27 97       	sbiw	r28, 0x07	; 7
+ 47e:	0f b6       	in	r0, 0x3f	; 63
+ 480:	f8 94       	cli
+ 482:	de bf       	out	0x3e, r29	; 62
+ 484:	0f be       	out	0x3f, r0	; 63
+ 486:	cd bf       	out	0x3d, r28	; 61
+  Uint8   NewKey;
+
+
+  // Set up the I/O lines
+
+  DDRB = PortDirB;
+ 488:	87 e0       	ldi	r24, 0x07	; 7
+ 48a:	84 b9       	out	0x04, r24	; 4
+  DDRC = PortDirC;
+ 48c:	17 b8       	out	0x07, r1	; 7
+  DDRD = PortDirD;
+ 48e:	84 ef       	ldi	r24, 0xF4	; 244
+ 490:	8a b9       	out	0x0a, r24	; 10
+
+  PINB = PortPullUpB;
+ 492:	13 b8       	out	0x03, r1	; 3
+  PINC = PortPullUpC;
+ 494:	8f e3       	ldi	r24, 0x3F	; 63
+ 496:	86 b9       	out	0x06, r24	; 6
+  PIND = PortPullUpD;
+ 498:	88 e0       	ldi	r24, 0x08	; 8
+ 49a:	89 b9       	out	0x09, r24	; 9
+
+  // Init the periphials
+
+  SetLamp(0);
+ 49c:	80 e0       	ldi	r24, 0x00	; 0
+ 49e:	3e df       	rcall	.-388    	; 0x31c <SetLamp>
+  Timer_Init();                               // Set up timers
+ 4a0:	4e df       	rcall	.-356    	; 0x33e <Timer_Init>
+
+  sei();    // Enable global interrupts
+ 4a2:	78 94       	sei
+  }
+*/
+
+  // Final set up
+
+  BCMessageInit(BCAKeypadController);         // Set up the UART
+ 4a4:	81 e0       	ldi	r24, 0x01	; 1
+ 4a6:	e5 dd       	rcall	.-1078   	; 0x72 <BCMessageInit>
+  BCMessageReceive(RxBuf);                    // Kick off receive
+ 4a8:	ee 24       	eor	r14, r14
+ 4aa:	e3 94       	inc	r14
+ 4ac:	f1 2c       	mov	r15, r1
+ 4ae:	ec 0e       	add	r14, r28
+ 4b0:	fd 1e       	adc	r15, r29
+ 4b2:	c7 01       	movw	r24, r14
+ 4b4:	41 de       	rcall	.-894    	; 0x138 <BCMessageReceive>
+ 4b6:	0e ef       	ldi	r16, 0xFE	; 254
+ 4b8:	1f ef       	ldi	r17, 0xFF	; 255
+
+  PowerOnTest = true;
+  Phase       = 0;
+  RetryTime   = 0;
+  RetryCount  = 0;
+  OldKey      = 0;
+ 4ba:	a1 2c       	mov	r10, r1
+  // Final set up
+
+  BCMessageInit(BCAKeypadController);         // Set up the UART
+  BCMessageReceive(RxBuf);                    // Kick off receive
+
+  PowerOnTest = true;
+ 4bc:	bb 24       	eor	r11, r11
+ 4be:	b3 94       	inc	r11
+  Phase       = 0;
+  RetryTime   = 0;
+  RetryCount  = 0;
+ 4c0:	c1 2c       	mov	r12, r1
+  BCMessageInit(BCAKeypadController);         // Set up the UART
+  BCMessageReceive(RxBuf);                    // Kick off receive
+
+  PowerOnTest = true;
+  Phase       = 0;
+  RetryTime   = 0;
+ 4c2:	d1 2c       	mov	r13, r1
+            TxBuf[BCPParam2] = RxBuf[BCPType];
+            BCMessageSend(TxBuf, true);           // Send the reply
+            break;
+        }
+      }
+      BCMessageReceive(RxBuf);    // Kick off receive of next frame
+ 4c4:	9f 2c       	mov	r9, r15
+ 4c6:	03 c0       	rjmp	.+6      	; 0x4ce <main+0x5a>
+ 4c8:	01 50       	subi	r16, 0x01	; 1
+ 4ca:	11 09       	sbc	r17, r1
+ 4cc:	af 2c       	mov	r10, r15
+
+
+  // Enter the main loop
+
+  for( ; ; ) {  // Run forever
+    DelayMS(LoopRate);
+ 4ce:	81 e0       	ldi	r24, 0x01	; 1
+ 4d0:	90 e0       	ldi	r25, 0x00	; 0
+ 4d2:	a6 df       	rcall	.-180    	; 0x420 <DelayMS>
+    ClearBit(LEDLogoPort, LEDLogo);
+#endif
+
+    // Look for new commands
+
+    if (BCRXAvail) {     // We have a new message
+ 4d4:	80 91 07 01 	lds	r24, 0x0107
+ 4d8:	88 23       	and	r24, r24
+ 4da:	91 f1       	breq	.+100    	; 0x540 <main+0xcc>
+      if ((RxBuf[BCPAddr] & 0b1111) == BCAKeypadController)  { // Check it is for us
+ 4dc:	2a 81       	ldd	r18, Y+2	; 0x02
+ 4de:	32 2f       	mov	r19, r18
+ 4e0:	3f 70       	andi	r19, 0x0F	; 15
+ 4e2:	31 30       	cpi	r19, 0x01	; 1
+ 4e4:	51 f5       	brne	.+84     	; 0x53a <main+0xc6>
+        Destination    = RxBuf[BCPAddr] >> 4;  // Preset up assuming we will reply
+        Destination    &= 0b1111;
+ 4e6:	22 95       	swap	r18
+ 4e8:	2f 70       	andi	r18, 0x0F	; 15
+        Destination    |= BCAKeypadController << 4;
+ 4ea:	20 61       	ori	r18, 0x10	; 16
+        TxBuf[BCPAddr] = Destination;
+ 4ec:	20 93 01 01 	sts	0x0101, r18
+        DelayMS(2);                         // Allow line turn around delay
+ 4f0:	82 e0       	ldi	r24, 0x02	; 2
+ 4f2:	90 e0       	ldi	r25, 0x00	; 0
+ 4f4:	3f 83       	std	Y+7, r19	; 0x07
+ 4f6:	94 df       	rcall	.-216    	; 0x420 <DelayMS>
+        switch (RxBuf[BCPType]) {
+ 4f8:	2b 81       	ldd	r18, Y+3	; 0x03
+ 4fa:	3f 81       	ldd	r19, Y+7	; 0x07
+ 4fc:	21 30       	cpi	r18, 0x01	; 1
+ 4fe:	e9 f0       	breq	.+58     	; 0x53a <main+0xc6>
+ 500:	d8 f0       	brcs	.+54     	; 0x538 <main+0xc4>
+ 502:	26 30       	cpi	r18, 0x06	; 6
+ 504:	71 f4       	brne	.+28     	; 0x522 <main+0xae>
+          case BCTNAck: // Negative acknowledge
+            break;
+
+          case BCTLamps: // Set lamps
+            PowerOnTest = false;
+            SetLamps(RxBuf[BCPParam1]);
+ 506:	8c 81       	ldd	r24, Y+4	; 0x04
+ 508:	e5 de       	rcall	.-566    	; 0x2d4 <SetLamps>
+            TxBuf[BCPType]   = BCTAck;
+ 50a:	10 92 02 01 	sts	0x0102, r1
+            TxBuf[BCPParam1] = 0;
+ 50e:	10 92 03 01 	sts	0x0103, r1
+            TxBuf[BCPParam2] = 0;
+ 512:	10 92 04 01 	sts	0x0104, r1
+            BCMessageSend(TxBuf, true);           // Send the reply
+ 516:	61 e0       	ldi	r22, 0x01	; 1
+ 518:	80 e0       	ldi	r24, 0x00	; 0
+ 51a:	91 e0       	ldi	r25, 0x01	; 1
+ 51c:	c5 dd       	rcall	.-1142   	; 0xa8 <BCMessageSend>
+
+          case BCTNAck: // Negative acknowledge
+            break;
+
+          case BCTLamps: // Set lamps
+            PowerOnTest = false;
+ 51e:	b1 2c       	mov	r11, r1
+            SetLamps(RxBuf[BCPParam1]);
+            TxBuf[BCPType]   = BCTAck;
+            TxBuf[BCPParam1] = 0;
+            TxBuf[BCPParam2] = 0;
+            BCMessageSend(TxBuf, true);           // Send the reply
+            break;
+ 520:	0c c0       	rjmp	.+24     	; 0x53a <main+0xc6>
+
+          default:  // Unknown command
+            TxBuf[BCPType]   = BCTNAck;
+ 522:	30 93 02 01 	sts	0x0102, r19
+            TxBuf[BCPParam1] = BCNUnkownType;
+ 526:	10 92 03 01 	sts	0x0103, r1
+            TxBuf[BCPParam2] = RxBuf[BCPType];
+ 52a:	20 93 04 01 	sts	0x0104, r18
+            BCMessageSend(TxBuf, true);           // Send the reply
+ 52e:	61 e0       	ldi	r22, 0x01	; 1
+ 530:	80 e0       	ldi	r24, 0x00	; 0
+ 532:	91 e0       	ldi	r25, 0x01	; 1
+ 534:	b9 dd       	rcall	.-1166   	; 0xa8 <BCMessageSend>
+            break;
+ 536:	01 c0       	rjmp	.+2      	; 0x53a <main+0xc6>
+        Destination    |= BCAKeypadController << 4;
+        TxBuf[BCPAddr] = Destination;
+        DelayMS(2);                         // Allow line turn around delay
+        switch (RxBuf[BCPType]) {
+          case BCTAck:                      // An ack of our key event
+            RetryTime = 0;                  // They got it so cancel retry counter
+ 538:	d1 2c       	mov	r13, r1
+            TxBuf[BCPParam2] = RxBuf[BCPType];
+            BCMessageSend(TxBuf, true);           // Send the reply
+            break;
+        }
+      }
+      BCMessageReceive(RxBuf);    // Kick off receive of next frame
+ 53a:	8e 2d       	mov	r24, r14
+ 53c:	99 2d       	mov	r25, r9
+ 53e:	fc dd       	rcall	.-1032   	; 0x138 <BCMessageReceive>
+    }
+
+    // Look for change of key state
+
+    NewKey = GetKey();
+ 540:	ab de       	rcall	.-682    	; 0x298 <GetKey>
+ 542:	f8 2e       	mov	r15, r24
+    if (NewKey != OldKey) {                                   // If change of key state
+ 544:	8a 15       	cp	r24, r10
+ 546:	29 f0       	breq	.+10     	; 0x552 <main+0xde>
+//    if ((NewKey != OldKey) &&                                   // If change of key state
+//        (RetryTime < (RetryTimePeriod - KeyDebouncePeriod))) {  // and not too soon after the last one (debounce)
+      SendKey(NewKey);
+ 548:	86 dd       	rcall	.-1268   	; 0x56 <SendKey>
+      RetryTime = RetryTimePeriod;
+      RetryCount = 0;
+ 54a:	20 e0       	ldi	r18, 0x00	; 0
+    NewKey = GetKey();
+    if (NewKey != OldKey) {                                   // If change of key state
+//    if ((NewKey != OldKey) &&                                   // If change of key state
+//        (RetryTime < (RetryTimePeriod - KeyDebouncePeriod))) {  // and not too soon after the last one (debounce)
+      SendKey(NewKey);
+      RetryTime = RetryTimePeriod;
+ 54c:	4a ef       	ldi	r20, 0xFA	; 250
+ 54e:	d4 2e       	mov	r13, r20
+ 550:	03 c0       	rjmp	.+6      	; 0x558 <main+0xe4>
+      OldKey = NewKey;
+    }
+
+    // Handle retry of key message
+
+    if (RetryTime)
+ 552:	dd 20       	and	r13, r13
+ 554:	59 f0       	breq	.+22     	; 0x56c <main+0xf8>
+ 556:	2c 2d       	mov	r18, r12
+      if (!--RetryTime) {
+ 558:	da 94       	dec	r13
+        if (RetryCount++ < 3) {
+ 55a:	c2 2e       	mov	r12, r18
+    }
+
+    // Handle retry of key message
+
+    if (RetryTime)
+      if (!--RetryTime) {
+ 55c:	39 f4       	brne	.+14     	; 0x56c <main+0xf8>
+        if (RetryCount++ < 3) {
+ 55e:	c3 94       	inc	r12
+ 560:	23 30       	cpi	r18, 0x03	; 3
+ 562:	20 f4       	brcc	.+8      	; 0x56c <main+0xf8>
+          SendKey(OldKey);
+ 564:	8f 2d       	mov	r24, r15
+ 566:	77 dd       	rcall	.-1298   	; 0x56 <SendKey>
+          RetryTime = RetryTimePeriod;
+ 568:	3a ef       	ldi	r19, 0xFA	; 250
+ 56a:	d3 2e       	mov	r13, r19
+        }
+      }
+
+    // Test LEDs
+
+    if (PowerOnTest) {
+ 56c:	bb 20       	and	r11, r11
+ 56e:	09 f4       	brne	.+2      	; 0x572 <main+0xfe>
+ 570:	ab cf       	rjmp	.-170    	; 0x4c8 <main+0x54>
+      SetLamp((~Phase >> 7) & 0b111);   // Rotate clockwise, the negate makes this opposite of what 031-517-202 does
+ 572:	c8 01       	movw	r24, r16
+ 574:	88 0f       	add	r24, r24
+ 576:	89 2f       	mov	r24, r25
+ 578:	88 1f       	adc	r24, r24
+ 57a:	99 0b       	sbc	r25, r25
+ 57c:	91 95       	neg	r25
+ 57e:	87 70       	andi	r24, 0x07	; 7
+ 580:	cd de       	rcall	.-614    	; 0x31c <SetLamp>
+ 582:	a2 cf       	rjmp	.-188    	; 0x4c8 <main+0x54>
+
+00000584 <_exit>:
+ 584:	f8 94       	cli
+
+00000586 <__stop_program>:
+ 586:	ff cf       	rjmp	.-2      	; 0x586 <__stop_program>
